@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import RPi.GPIO as GPIO
-from time import sleep
+from time import sleep, time
 
 light_on = {
     1: False,
@@ -16,6 +16,7 @@ LED = {
     4: 23,
 }
 BUTTON = 25
+last_push = 0
 
 def setup():
     """
@@ -36,7 +37,22 @@ def setup():
 
     # next line sets pin for input (button)
     GPIO.setup(BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+def button_pushed(button_pin):
+    """
+    this will ask if button is pushed
+    """
+    global last_push
     
+    elapsed_time = time() - last_push
+    if elapsed_time < 0.5:
+        return False
+    
+    if GPIO.input(button_pin):
+        last_push = time()
+        return True
+    else:
+        return False
     
 
 def toggle_led(led_number):
@@ -67,8 +83,51 @@ def wait_for_button():
 
     
 setup()
-
+state = False
 while 1:
-    wait_for_button()
-    toggle_all()
-    sleep(0.5)        
+    # check if state is true, toggle led 1, if so
+    if state == True:
+        toggle_led(1)
+        sleep(0.25)
+        toggle_led(1)
+              
+    # check button to maybe switch state
+    if button_pushed(BUTTON) == True:
+         state = not state   
+    
+    # check if state is true, toggle led 2, if so
+    if state == True:
+        toggle_led(2)
+        sleep(0.25)
+        toggle_led(2)
+    
+    # check button to maybe switch state
+    if button_pushed(BUTTON) == True:
+         state = not state   
+    
+    
+    # check if state is true, toggle led 3, if so
+    if state == True:
+        toggle_led(3)
+        sleep(0.25)
+        toggle_led(3)
+        
+    # check button to maybe switch state
+    if button_pushed(BUTTON) == True:
+         state = not state   
+     
+    # check if state is true, toggle led 4, if so
+    if state == True:
+        toggle_led(4)
+        sleep(0.25)
+        toggle_led(4)
+        
+    # check button to maybe switch state
+    if button_pushed(BUTTON) == True:
+         state = not state   
+
+
+
+
+
+    
